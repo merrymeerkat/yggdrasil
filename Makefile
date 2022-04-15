@@ -16,7 +16,7 @@ endif
 
 all: diskimpl.so yav_dirimpl_fuse.so
 
-prod: bitmap.so inodepack.so waldisk.so xv6inode.so yav_xv6_main.so dirinode.so
+#prod: bitmap.so inodepack.so waldisk.so xv6inode.so yav_xv6_main.so dirinode.so
 
 .PHONY: verify
 verify: diskimpl.so

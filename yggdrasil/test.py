@@ -19,6 +19,8 @@ from util import prove, solve
 
 import solver
 
+#(dani) added this for debugging
+import pdb
 
 def z3_option(**kwargs):
     def decorator(fn):
@@ -140,6 +142,8 @@ class DiskTest(unittest.TestCase):
         model = self._solve(*args, **kwargs)
         self.assertIsNone(model)
 
+    #(dani) QUESTION: what does "p" stand for here? e.g. prove -> pprove, solve -> psolve
+    #(dani) I think it might mean "printing"; i.e., the versions of the original functions where we also print more detailed results
     def psolve(self, *args, **kwargs):
         model = self._solve(And(*disk.assertion.assertions), *args, **kwargs)
         if model:
@@ -148,6 +152,7 @@ class DiskTest(unittest.TestCase):
                 print msg,
                 for v in vs:
                     print model.evaluate(v),
+                    #print model.evaluate(x, model_completion = True) (dani)
                 print ""
             print ""
 
@@ -159,8 +164,10 @@ class DiskTest(unittest.TestCase):
             print ""
             for msg, vs in disk.debug.debugs:
                 print msg,
-                for v in vs:
+                for v in vs: 
                     print model.evaluate(v),
+                    print("MODEL", model)
+                    #print model.evaluate(x, model_completion = True) (dani)
                 print ""
             print ""
 
@@ -168,20 +175,26 @@ class DiskTest(unittest.TestCase):
 
     def show(self, *args, **kwargs):
         model = self._solve(*args, **kwargs)
+#        print(model) # (dani) # uncomment to debug
+#       print("show")
         self.assertIsNotNone(model)
+
         return model
 
     def _solve(self, *args, **keywords):
         s = solver.Solver()
-
+#        print("_SOLVE")
         s.set(**keywords)
 
         s.add(*args)
 
         if keywords.get('show', False):
             print(s)
-
+        
+        #(dani) os.getenv(key, default=None) returns the value of the environment variable "key" if it exists, or default if it doesn't.
+        #(dani) QUESTION: I wonder where SMT is defined though? I don't see it anywhere else with grep, except the util.py file, but there it is also not defined.
         smt = os.getenv('SMT')
+
         if smt:
             PIPE = subprocess.PIPE
             args = [ "{}={}".format(a, str(b).lower()) for a, b in keywords.items() ]
@@ -199,7 +212,7 @@ class DiskTest(unittest.TestCase):
         else:
             r = s.check()
         if r == unsat:
-            return None
+            return None # The model returns "None" when the formula is unsatisfiable
         elif r == unknown:
             self.fail("Solver failed to solve")
         else:
@@ -225,7 +238,9 @@ class RefinementMeta(type):
 
 class RefinementTest(DiskTest):
     __metaclass__ = RefinementMeta
+   
     DEBUG = False
+    #DEBUG = True
 
     def setUp(self):
         super(RefinementTest, self).setUp()
@@ -374,6 +389,7 @@ class RefinementTest(DiskTest):
                         print msg,
                         for v in vs:
                             print model.evaluate(v),
+                            #print model.evaluate(x, model_completion = True) (dani)
                         print ""
                     print ""
 
@@ -463,6 +479,7 @@ class RefinementTest(DiskTest):
                         print msg,
                         for v in vs:
                             print model.evaluate(v),
+#                            print model.evaluate(x, model_completion = True) (dani)
                         print ""
                     print ""
 

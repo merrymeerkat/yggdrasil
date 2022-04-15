@@ -112,10 +112,12 @@ class Block(object):
         return Not(self.__eq__(other))
 
     def _print(self, num=None):
+        print('oi')
         if num is None:
             num = self.size
         for i in range(num):
             print simplify(self[i])
+        print("oi")
 
     @property
     def size(self):
@@ -244,6 +246,8 @@ class UFunction(object):
         assert len(key) == len(self._domain)
 
         key = list(key)
+        #(dani) Print statement for debugging:
+        #print("name of object is {}, object key is {}, len is {}, domain is {}, len {}".format(self._name, key, len(key), self._domain, len(self._domain)))
 
         for n in range(len(key)):
             if isinstance(key[n], int):
